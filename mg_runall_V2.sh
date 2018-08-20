@@ -31,8 +31,8 @@
 #mkdir $2/P04_vf
 #mkdir $2/P04_vf/temp
 
-mkdir $2/P04_abx
-mkdir $2/P04_abx/temp
+#mkdir $2/P04_abx
+#mkdir $2/P04_abx/temp
 
 mkdir $2/P04_exo/
 mkdir $2/P04_exo/temp
@@ -88,18 +88,18 @@ mkdir $2/P04_exo/temp
 #rm -r /home/acobian/DH08102018/mg/P04_custom_dbs/temp
 #mkdir /home/acobian/DH08102018/mg/P04_custom_dbs/temp
 
-cat $1 | xargs -I{fileID} sh -c "diamond blastx -d /home/DATABASES/PATRIC/CARD -q $2/P03_map_HG/polished_{fileID}.fasta -a $2/P04_abx/{fileID}_vs_CARD -p $3 -t $2/P04_abx/temp"
-cat $1 | xargs -I{fileID} sh -c "diamond view -a $2/P04_abx/{fileID}_vs_CARD.daa -o $2/P04_abx/{fileID}_vs_CARD.m8"
-cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/MYSCRIPTS/besthitblast.pl $2/P04_abx/{fileID}_vs_CARD.m8 > $2/P04_abx/besthit_{fileID}_vs_CARD.m8"
-cat $1 | xargs -I{fileID} sh -c "cut -f 1,2 $2/P04_abx/besthit_{fileID}_vs_CARD.m8 | sort | uniq | cut -f 2 | sort | uniq -c | sort -nr  | sed -e 's/^ *//' | tr '"' '"' '"'\t'"' > $2/P04_vf/hits_abx_{fileID}.tab"
-cat $1 | xargs -I{fileID} sh -c "cut -f 2 $2/P04_vf/hits_abx_{fileID}.tab | cut -d '"'|'"' -f 2 | xargs -I{ID2} grep {ID2} /home/DATABASES/PATRIC/CARD.faa > $2/P04_vf/names_hits_abx_{fileID}.tab"
-cat $1 | xargs -I{fileID} sh -c "paste $2/P04_vf/hits_abx_{fileID}.tab $2/P04_vf/names_hits_abx_{fileID}.tab > $2/P04_vf/OUT_abx_hits_and_names_{fileID}.tab"
+#cat $1 | xargs -I{fileID} sh -c "diamond blastx -d /home/DATABASES/PATRIC/CARD -q $2/P03_map_HG/polished_{fileID}.fasta -a $2/P04_abx/{fileID}_vs_CARD -p $3 -t $2/P04_abx/temp"
+#cat $1 | xargs -I{fileID} sh -c "diamond view -a $2/P04_abx/{fileID}_vs_CARD.daa -o $2/P04_abx/{fileID}_vs_CARD.m8"
+#cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/MYSCRIPTS/besthitblast.pl $2/P04_abx/{fileID}_vs_CARD.m8 > $2/P04_abx/besthit_{fileID}_vs_CARD.m8"
+#cat $1 | xargs -I{fileID} sh -c "cut -f 1,2 $2/P04_abx/besthit_{fileID}_vs_CARD.m8 | sort | uniq | cut -f 2 | sort | uniq -c | sort -nr  | sed -e 's/^ *//' | tr '"' '"' '"'\t'"' > $2/P04_vf/hits_abx_{fileID}.tab"
+#cat $1 | xargs -I{fileID} sh -c "cut -f 2 $2/P04_vf/hits_abx_{fileID}.tab | cut -d '"'|'"' -f 2 | xargs -I{ID2} grep {ID2} /home/DATABASES/PATRIC/CARD.faa > $2/P04_vf/names_hits_abx_{fileID}.tab"
+#cat $1 | xargs -I{fileID} sh -c "paste $2/P04_vf/hits_abx_{fileID}.tab $2/P04_vf/names_hits_abx_{fileID}.tab > $2/P04_vf/OUT_abx_hits_and_names_{fileID}.tab"
 
 #diamond:Human_pathogenic_bacterial_exotoxin
 #rm -r /home/acobian/DH08102018/mg/P04_custom_dbs/temp
 #mkdir /home/acobian/DH08102018/mg/P04_custom_dbs/temp
 
-cat $1 | xargs -I{fileID} sh -c "diamond blastx -d /home/DATABASES/CustomDBS/Human_pathogenic_bacterial_exotoxin -q $2/P03_map_HG/polished_{fileID}.fasta -a $2/P04_exo/{fileID}_vs_CARD -p $3 -t $2/P04_exo/temp"
+cat $1 | xargs -I{fileID} sh -c "diamond blastx -d /home/DATABASES/CustomDBS/Human_pathogenic_bacterial_exotoxin -q $2/P03_map_HG/polished_{fileID}.fasta -a $2/P04_exo/{fileID}_vs_exo -p $3 -t $2/P04_exo/temp"
 cat $1 | xargs -I{fileID} sh -c "diamond view -a $2/P04_exo/{fileID}_vs_exo.daa -o $2/P04_exo/{fileID}_vs_exo.m8"
 cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/MYSCRIPTS/besthitblast.pl $2/P04_exo/{fileID}_vs_exo.m8 > $2/P04_exo/besthit_{fileID}_vs_exo.m8"
 cat $1 | xargs -I{fileID} sh -c "cut -f 1,2 $2/P04_exo/besthit_{fileID}_vs_exo.m8 | sort | uniq | cut -f 2 | sort | uniq -c | sort -nr  | sed -e 's/^ *//' | tr '"' '"' '"'\t'"' > $2/P04_exo/hits_exo_{fileID}.tab"
