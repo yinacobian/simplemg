@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#bash mg_runall_V2.sh IDS.txt /home/acobian/cobian2018_CFRR/mg 40
+
 #To run do: thisscrit.sh [IDS.txt] [path to main folder] [number of threads to use in the system]
 
 # $1 is a list of IDS
@@ -22,8 +24,6 @@
 #mkdir $2/P01_prinseq_output
 #mkdir $2/P02_map_univec
 #mkdir $2/P03_map_HG
-#mkdir $2/P04_custom_dbs
-#mkdir $2/P04_custom_dbs/temp
 #mkdir $2/P05_viral
 #mkdir $2/P06_blastn_nt
 #mkdir $2/P05_frap_viral
@@ -36,6 +36,8 @@
 
 #mkdir $2/P04_exo/
 #mkdir $2/P04_exo/temp
+
+#mkdir $2/P07_denovo
 
 #1.- Quality control
 
@@ -122,8 +124,14 @@
 
 
 
-#6.- Denovo assembly 
+#6.- Denovo assembly and comparison to NT 
+#cat $1 | xargs -I{fileID} sh -c "spades.py -s $2/P03_polished/polished_{fileID}.fasta -t $3 --only-assembler -o $2/P07_denovo/spades_{fileID}"
+#cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/removesmalls.pl 900 $2/P07_denovo/spades_{fileID}/contigs.fasta > $2/P07_denovo/more900_contigs_{fileID}.fasta"
+#cat $1 | xargs -I{fileID} sh -c "blastn -query $2/P07_denovo/more900_contigs_{fileID}.fasta -db /home/DATABASES/blast/nt/nt -out $2/P07_denovo/vs_NT_more900_contigs_{fileID}.blastn -evalue 0.1 -num_threads $3 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident length mismatchgapopen qstart qend sstart send evalue bitscore sskingdoms sscinames'"
+#cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/MYSCRIPTS/besthitblast.pl $2/P07_denovo/vs_NT_more900_contigs_{fileID}.blastn > $2/P07_denovo/besthit_vs_NT_more900_contigs_{fileID}.blastn"
 
+#cat $1 | xargs -I{fileID} sh -c "cut -f 1 $2/P07_denovo/besthit_vs_NT_more900_contigs_{fileID}.blastn > $2/P07_denovo/toremove_{fileID}.txt"
+cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/remove_fasta_id.pl toremove_{fileID}.txt $2/P07_denovo/more900_contigs_{fileID}.fasta > $2/P07_denovo/nohits_more900_contigs_{fileID}.fasta"
 
 #7.- 
 
@@ -144,6 +152,12 @@
 #cat $1 | xargs -I{fileID} sh -c 'cut -f 1,2 /home/acobian/DH08102018/mg/P05_viral/besthit_{fileID}_vs_viral_proteins.m8  | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\t"  > /home/acobian/DH08102018/mg/P05_viral/hits_viral_proteins_{fileID}.tab'
 #cat $1 | xargs -I{fileID} sh -c 'cut -f 2 /home/acobian/DH08102018/mg/P05_viral/hits_viral_proteins_{fileID}.tab | cut -d '"'"'|'"'"' -f 2 | xargs -I{ID2} grep {ID2} /home/acobian/DB/DB_CF_basic/all_viral_proteins.faa > /home/acobian/DH08102018/mg/P05_viral/names_hits_viral_proteins_{fileID}.tab'
 #cat $1 | xargs -I{fileID} sh -c 'paste /home/acobian/DH08102018/mg/P05_viral/hits_viral_proteins_{fileID}.tab /home/acobian/DH08102018/mg/P05_viral/names_hits_viral_proteins_{fileID}.tab > /home/acobian/DH08102018/mg/P05_viral/OUT_viral_proteins_hits_and_names_{fileID}.tab'
+
+
+
+
+##manually count hits
+#ls | grep 'nounivec' | xargs -I {} sh -c ' echo {} ; grep "'">"'" {} | wc -l '
 
 
 
