@@ -39,6 +39,8 @@
 
 #mkdir $2/P07_denovo
 
+#mkdir $2/P08_coverage_plots
+
 #1.- Quality control
 
 #quality filtering single end : prinseq++
@@ -123,9 +125,14 @@
 #5.- Coverage plots for most abundant genus 
 
 #get the most abundant genome from each genus from NCBI: 
-head -n 5 count_genus_bacteria_hits_CF01mgD8.tab | cut -f 2 > topgenus_CF01mgD8.txt
-cat topgenus_CF01mgD8.txt | xargs -I {genus} sh -c 'grep {genus} besthit_vs_NT_CF01mgD8.blastn | cut -f 2 | sort -n | uniq -c | sort -nr | head -n 1 | cut -f 4 -d "|" ' > ids_topspecies_CF01mdD8.txt
-cat ids_topspecies_CF01mdD8.txt | xargs -I{genomeID} sh -c "curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={genomeID}&retnode=text&rettype=fasta' > {genomeID}.fasta"
+cat $1 | xargs -I{fileID} sh -c "mkdir $2/P08_coverage_plots/bacteria_plots_{fileID}"
+cat $1 | xargs -I{fileID} sh -c "head -n 5 $2/P06_blastn_nt/count_genus_bacteria_hits_{fileID}.tab | cut -f 2 > $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt"
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt | xargs -I {genus} sh -c 'grep {genus} $2/P06_blastn_nt/besthit_vs_NT_{fileID}.blastn | cut -f 2 | sort -n | uniq -c | sort -nr | head -n 1 | cut -f 4 -d "|" ' > $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_CF01mdD8.txt"
+
+
+#cat $2/P08_coverage_plots/ids_topspecies_CF01mdD8.txt | xargs -I{genomeID} sh -c "curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={genomeID}&retnode=text&rettype=fasta' > $2/P08_coverage_plots/{genomeID}.fasta"
+
+#mapping and coverage plots
  
 
 #6.- Denovo assembly and comparison to NT 
