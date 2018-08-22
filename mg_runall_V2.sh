@@ -122,7 +122,11 @@
 
 #5.- Coverage plots for most abundant genus 
 
-
+#get the most abundant genome from each genus from NCBI: 
+head -n 5 count_genus_bacteria_hits_CF01mgD8.tab | cut -f 2 > topgenus_CF01mgD8.txt
+cat topgenus_CF01mgD8.txt | xargs -I {genus} sh -c 'grep {genus} besthit_vs_NT_CF01mgD8.blastn | cut -f 2 | sort -n | uniq -c | sort -nr | head -n 1 | cut -f 4 -d "|" ' > ids_topspecies_CF01mdD8.txt
+cat ids_topspecies_CF01mdD8.txt | xargs -I{genomeID} sh -c "curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={genomeID}&retnode=text&rettype=fasta' > {genomeID}.fasta"
+ 
 
 #6.- Denovo assembly and comparison to NT 
 #cat $1 | xargs -I{fileID} sh -c "spades.py -s $2/P03_map_HG/polished_{fileID}.fasta -t $3 --only-assembler -o $2/P07_denovo/spades_{fileID}"
