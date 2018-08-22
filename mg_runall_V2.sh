@@ -125,17 +125,53 @@
 #5.- Coverage plots for most abundant genus 
 
 #get the most abundant genome from each genus from NCBI: 
-cat $1 | xargs -I{fileID} sh -c "mkdir $2/P08_coverage_plots/bacteria_plots_{fileID}"
-cat $1 | xargs -I{fileID} sh -c "head -n 5 $2/P06_blastn_nt/count_genus_bacteria_hits_{fileID}.tab | cut -f 2 > $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt"
-cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt | xargs -I {genus} sh -c "'"'"grep {genus} $2/P06_blastn_nt/besthit_vs_NT_{fileID}.blastn | cut -f 2 | sort -n | uniq -c | sort -nr | head -n 1 | cut -f 4 -d '|' "'"'" > $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_CF01mdD8.txt"
+#cat $1 | xargs -I{fileID} sh -c "mkdir $2/P08_coverage_plots/bacteria_plots_{fileID}"
+#cat $1 | xargs -I{fileID} sh -c "head -n 5 $2/P06_blastn_nt/count_genus_bacteria_hits_{fileID}.tab | cut -f 2 > $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt"
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt | xargs -I {genus} sh -c "'"'"grep {genus} $2/P06_blastn_nt/besthit_vs_NT_{fileID}.blastn | cut -f 2 | sort -n | uniq -c | sort -nr | head -n 1 | cut -f 4 -d '|' "'"'" > $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt"
+#cat $1 | xargs -I{fileID} sh -c "mkdir $2/P08_coverage_plots/bacteria_plots_{fileID}/DB"
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I{genomeID} sh -c "'"'"curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={genomeID}&retnode=text&rettype=fasta' > $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta"'"'""
 
-
-#cat $2/P08_coverage_plots/ids_topspecies_CF01mdD8.txt | xargs -I{genomeID} sh -c "curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={genomeID}&retnode=text&rettype=fasta' > $2/P08_coverage_plots/{genomeID}.fasta"
-
+###need to fix the names of the reference genome files: 
 #curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=KC470543&retnode=text&rettype=fasta' > $(curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=KC470543&retnode=xml&rettype=native' | xmllint --xpath "string(//Org-ref_taxname)" - | tr "\ " "_" ).fasta
 
 
-#mapping and coverage plots
+#mapping and get mpileups:
+
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" smalt index -k 10 -s 5 $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID} $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta"'"'" "
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" smalt map -x -y 0.9 -n $3 -f sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID} $2/P03_map_HG/polished_{fileID}.fasta"'"'" "
+
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools view -b -T $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam "'"'" "
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools sort -O bam -T $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam  -o $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam "'"'" "
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools mpileup -d 10000000 -a --reference $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab "'"'" "
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" cut -f 1,4 $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab > $2/P08_coverage_plots/bacteria_plots_{fileID}/cov_mpileup_map_{genomeID}_{fileID}.tab "'"'" "
+
+#Coverage plots, needs the script PlotCoverage.R
+#cat $1 | xargs -I{id} sh -c 'Rscript PlotCoverage.R {id}'
+
+#cat $1 | xargs -I{id} sh -c ''
+
+#Remove intermediate files
+
+#cat $1 | xargs -I{id} sh -c 'rm {id}.sma'
+#cat $1 | xargs -I{id} sh -c 'rm {id}.smi'
+#cat $1 | xargs -I{id} sh -c 'rm map_{id}_CF146mt03292018.samsoft'
+#cat $1 | xargs -I{id} sh -c 'rm map_{id}_CF146mt03292018.bam'
+#cat $1 | xargs -I{id} sh -c 'rm sorted_map_{id}_CF146mt03292018.bam'
+#cat $1 | xargs -I{id} sh -c 'rm mpileup_map_{id}_CF146mt03292018.tab'
+#cat $1 | xargs -I{id} sh -c 'rm cov_mpileup_map_{id}_CF146mt03292018.tab'
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 
 #6.- Denovo assembly and comparison to NT 
