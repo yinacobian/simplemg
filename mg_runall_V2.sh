@@ -127,7 +127,7 @@
 #get the most abundant genome from each genus from NCBI: 
 cat $1 | xargs -I{fileID} sh -c "mkdir $2/P08_coverage_plots/bacteria_plots_{fileID}"
 cat $1 | xargs -I{fileID} sh -c "head -n 5 $2/P06_blastn_nt/count_genus_bacteria_hits_{fileID}.tab | cut -f 2 > $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt"
-cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt | xargs -I {genus} sh -c '"'grep {genus} $2/P06_blastn_nt/besthit_vs_NT_{fileID}.blastn | cut -f 2 | sort -n | uniq -c | sort -nr | head -n 1 | cut -f 4 -d '|' > $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_CF01mdD8.txt'"'"
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/topgenus_{fileID}.txt | xargs -I {genus} sh -c "'"'"grep {genus} $2/P06_blastn_nt/besthit_vs_NT_{fileID}.blastn | cut -f 2 | sort -n | uniq -c | sort -nr | head -n 1 | cut -f 4 -d '|' "'"'" > $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_CF01mdD8.txt"
 
 
 #cat $2/P08_coverage_plots/ids_topspecies_CF01mdD8.txt | xargs -I{genomeID} sh -c "curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={genomeID}&retnode=text&rettype=fasta' > $2/P08_coverage_plots/{genomeID}.fasta"
