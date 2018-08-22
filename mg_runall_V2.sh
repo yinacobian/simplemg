@@ -125,13 +125,19 @@
 
 
 #6.- Denovo assembly and comparison to NT 
-#cat $1 | xargs -I{fileID} sh -c "spades.py -s $2/P03_polished/polished_{fileID}.fasta -t $3 --only-assembler -o $2/P07_denovo/spades_{fileID}"
+#cat $1 | xargs -I{fileID} sh -c "spades.py -s $2/P03_map_HG/polished_{fileID}.fasta -t $3 --only-assembler -o $2/P07_denovo/spades_{fileID}"
 #cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/removesmalls.pl 900 $2/P07_denovo/spades_{fileID}/contigs.fasta > $2/P07_denovo/more900_contigs_{fileID}.fasta"
 #cat $1 | xargs -I{fileID} sh -c "blastn -query $2/P07_denovo/more900_contigs_{fileID}.fasta -db /home/DATABASES/blast/nt/nt -out $2/P07_denovo/vs_NT_more900_contigs_{fileID}.blastn -evalue 0.1 -num_threads $3 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident length mismatchgapopen qstart qend sstart send evalue bitscore sskingdoms sscinames'"
 #cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/MYSCRIPTS/besthitblast.pl $2/P07_denovo/vs_NT_more900_contigs_{fileID}.blastn > $2/P07_denovo/besthit_vs_NT_more900_contigs_{fileID}.blastn"
 
 #cat $1 | xargs -I{fileID} sh -c "cut -f 1 $2/P07_denovo/besthit_vs_NT_more900_contigs_{fileID}.blastn > $2/P07_denovo/toremove_{fileID}.txt"
-cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/remove_fasta_id.pl toremove_{fileID}.txt $2/P07_denovo/more900_contigs_{fileID}.fasta > $2/P07_denovo/nohits_more900_contigs_{fileID}.fasta"
+#cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/remove_fasta_id.pl $2/P07_denovo/toremove_{fileID}.txt $2/P07_denovo/more900_contigs_{fileID}.fasta > $2/P07_denovo/nohits_more900_contigs_{fileID}.fasta"
+#cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/removesmalls.pl 2000 $2/P07_denovo/nohits_more900_contigs_{fileID}.fasta > $2/P07_denovo/nohits_more2000_contigs_{fileID}.fasta"
+
+### rename the contigs to include the sample ID. 
+### submitt to RAST and PATRIC for annotation 
+### get the CDS 
+
 
 #7.- 
 
