@@ -138,20 +138,20 @@
 #mapping and get mpileups:
 
 #cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" smalt index -k 10 -s 5 $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID} $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta"'"'" "
-#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" smalt map -x -y 0.9 -n $3 -f sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID} $2/P03_map_HG/polished_{fileID}.fasta"'"'" "
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" smalt map -y 0.9 -n $3 -f sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID} $2/P03_map_HG/polished_{fileID}.fasta"'"'" "
 
-cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools view -b -T $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam "'"'" "
-cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools sort -O bam -T $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam  -o $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam "'"'" "
-cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools mpileup -d 10000000 -a --reference $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab "'"'" "
-cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" cut -f 1,4 $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab > $2/P08_coverage_plots/bacteria_plots_{fileID}/cov_mpileup_map_{genomeID}_{fileID}.tab "'"'" "
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools view -b -T $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam "'"'" "
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools sort -O bam -T toto $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam  -o $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam "'"'" "
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools mpileup -d 10000000 -a --reference $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab "'"'" "
+#cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" cut -f 1,4 $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab > $2/P08_coverage_plots/bacteria_plots_{fileID}/cov_mpileup_map_{genomeID}_{fileID}.tab "'"'" "
 
 #Coverage plots, needs the script PlotCoverage.R
-#cat $1 | xargs -I{id} sh -c 'Rscript PlotCoverage.R {id}'
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" Rscript /home/acobian/bin/PlotCoverage.R {genomeID} {fileID} $2/P08_coverage_plots/bacteria_plots_{fileID} "'"'" "
+
 
 #cat $1 | xargs -I{id} sh -c ''
 
 #Remove intermediate files
-
 #cat $1 | xargs -I{id} sh -c 'rm {id}.sma'
 #cat $1 | xargs -I{id} sh -c 'rm {id}.smi'
 #cat $1 | xargs -I{id} sh -c 'rm map_{id}_CF146mt03292018.samsoft'
@@ -161,20 +161,9 @@ cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileI
 #cat $1 | xargs -I{id} sh -c 'rm cov_mpileup_map_{id}_CF146mt03292018.tab'
 
 
-
-
-
-
-
-
-
-
-
-
-
- 
-
 #6.- Denovo assembly and comparison to NT 
+
+
 #cat $1 | xargs -I{fileID} sh -c "spades.py -s $2/P03_map_HG/polished_{fileID}.fasta -t $3 --only-assembler -o $2/P07_denovo/spades_{fileID}"
 #cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/removesmalls.pl 900 $2/P07_denovo/spades_{fileID}/contigs.fasta > $2/P07_denovo/more900_contigs_{fileID}.fasta"
 #cat $1 | xargs -I{fileID} sh -c "blastn -query $2/P07_denovo/more900_contigs_{fileID}.fasta -db /home/DATABASES/blast/nt/nt -out $2/P07_denovo/vs_NT_more900_contigs_{fileID}.blastn -evalue 0.1 -num_threads $3 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident length mismatchgapopen qstart qend sstart send evalue bitscore sskingdoms sscinames'"
@@ -189,7 +178,7 @@ cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileI
 ### get the CDS 
 
 
-#7.- 
+#7.- FRAP viral refseq
 
 
 #FRAP viral refseq
@@ -208,9 +197,6 @@ cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileI
 #cat $1 | xargs -I{fileID} sh -c 'cut -f 1,2 /home/acobian/DH08102018/mg/P05_viral/besthit_{fileID}_vs_viral_proteins.m8  | sort | uniq | cut -f2 | sort | uniq -c | sort -nr  | sed -e "s/^ *//" | tr " " "\t"  > /home/acobian/DH08102018/mg/P05_viral/hits_viral_proteins_{fileID}.tab'
 #cat $1 | xargs -I{fileID} sh -c 'cut -f 2 /home/acobian/DH08102018/mg/P05_viral/hits_viral_proteins_{fileID}.tab | cut -d '"'"'|'"'"' -f 2 | xargs -I{ID2} grep {ID2} /home/acobian/DB/DB_CF_basic/all_viral_proteins.faa > /home/acobian/DH08102018/mg/P05_viral/names_hits_viral_proteins_{fileID}.tab'
 #cat $1 | xargs -I{fileID} sh -c 'paste /home/acobian/DH08102018/mg/P05_viral/hits_viral_proteins_{fileID}.tab /home/acobian/DH08102018/mg/P05_viral/names_hits_viral_proteins_{fileID}.tab > /home/acobian/DH08102018/mg/P05_viral/OUT_viral_proteins_hits_and_names_{fileID}.tab'
-
-
-
 
 ##manually count hits
 #ls | grep 'nounivec' | xargs -I {} sh -c ' echo {} ; grep "'">"'" {} | wc -l '
