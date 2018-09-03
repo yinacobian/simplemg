@@ -1,0 +1,21 @@
+Databases for simplemg pipeline:
+
+Human Genome
+
+ftp://igenome:G3nom3s4u@ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg38/Homo_sapiens_UCSC_hg38.tar.gz
+
+Abundant Sequences
+Chromosomes
+
+ALU sequence: https://www.ncbi.nlm.nih.gov/nuccore/U14568.1?report=fasta
+
+
+
+Get smalt:
+wget http://sourceforge.net/projects/smalt/files/smalt-0.7.6-static.tar.gz
+
+Get spades:
+wget http://cab.spbu.ru/files/release3.12.0/SPAdes-3.12.0-Linux.tar.gz
+
+Make index:
+smalt index -k 10 -s 5 hgabundant hgabundant.fa
