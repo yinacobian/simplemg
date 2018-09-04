@@ -134,35 +134,29 @@
 ###need to fix the names of the reference genome files: 
 #curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=KC470543&retnode=text&rettype=fasta' > $(curl 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=KC470543&retnode=xml&rettype=native' | xmllint --xpath "string(//Org-ref_taxname)" - | tr "\ " "_" ).fasta
 
+cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {id} sh -c "'"'"grep {id} /home/acobian/cobian2018_CFRR/mg/P08_coverage_plots/bacteria_plots_{fileID}/DB/{id}.fasta"'"'" | cut -c 2- |  cut -f 1 -d ' ' --complement > $2/P08_coverage_plots/bacteria_plots_{fileID}/names_topspecies_{fileID}.txt"
+cat $1 | xargs -I{fileID} sh -c "paste $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt $2/P08_coverage_plots/bacteria_plots_{fileID}/names_topspecies_{fileID}.txt > $2/P08_coverage_plots/bacteria_plots_{fileID}/ok_id_names_topspecies_{fileID}.txt"
 
-#mapping and get mpileups:
+#cat ids_topspecies_CF01mgD8.txt | xargs -I {id} sh -c 'grep -T {id} /home/acobian/cobian2018_CFRR/mg/P08_coverage_plots/bacteria_plots_CF01mgD8//DB/{id}.fasta | cut -c 2- ' |  cut -f 1 -d ' ' --complement  > names
+#paste ids_topspecies_CF01mgD8.txt names > ok_names 
+
+
+#map and get mpileups:
 
 #cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" smalt index -k 10 -s 5 $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID} $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta"'"'" "
 #cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" smalt map -y 0.9 -n $3 -f sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID} $2/P03_map_HG/polished_{fileID}.fasta"'"'" "
-
 #cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools view -b -T $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.sam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam "'"'" "
 #cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools sort -O bam -T toto $2/P08_coverage_plots/bacteria_plots_{fileID}/map_{genomeID}_{fileID}.bam  -o $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam "'"'" "
 #cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" samtools mpileup -d 10000000 -a --reference $2/P08_coverage_plots/bacteria_plots_{fileID}/DB/{genomeID}.fasta $2/P08_coverage_plots/bacteria_plots_{fileID}/sorted_map_{genomeID}_{fileID}.bam -o $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab "'"'" "
 #cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" cut -f 1,4 $2/P08_coverage_plots/bacteria_plots_{fileID}/mpileup_map_{genomeID}_{fileID}.tab > $2/P08_coverage_plots/bacteria_plots_{fileID}/cov_mpileup_map_{genomeID}_{fileID}.tab "'"'" "
 
+
+
 #Coverage plots, needs the script PlotCoverage.R
 cat $1 | xargs -I{fileID} sh -c "cat $2/P08_coverage_plots/bacteria_plots_{fileID}/ids_topspecies_{fileID}.txt | xargs -I {genomeID} sh -c "'"'" Rscript /home/acobian/bin/PlotCoverage.R {genomeID} {fileID} $2/P08_coverage_plots/bacteria_plots_{fileID} "'"'" "
 
 
-#cat $1 | xargs -I{id} sh -c ''
-
-#Remove intermediate files
-#cat $1 | xargs -I{id} sh -c 'rm {id}.sma'
-#cat $1 | xargs -I{id} sh -c 'rm {id}.smi'
-#cat $1 | xargs -I{id} sh -c 'rm map_{id}_CF146mt03292018.samsoft'
-#cat $1 | xargs -I{id} sh -c 'rm map_{id}_CF146mt03292018.bam'
-#cat $1 | xargs -I{id} sh -c 'rm sorted_map_{id}_CF146mt03292018.bam'
-#cat $1 | xargs -I{id} sh -c 'rm mpileup_map_{id}_CF146mt03292018.tab'
-#cat $1 | xargs -I{id} sh -c 'rm cov_mpileup_map_{id}_CF146mt03292018.tab'
-
-
 #6.- Denovo assembly and comparison to NT 
-
 
 #cat $1 | xargs -I{fileID} sh -c "spades.py -s $2/P03_map_HG/polished_{fileID}.fasta -t $3 --only-assembler -o $2/P07_denovo/spades_{fileID}"
 #cat $1 | xargs -I{fileID} sh -c "perl /home/acobian/bin/removesmalls.pl 900 $2/P07_denovo/spades_{fileID}/contigs.fasta > $2/P07_denovo/more900_contigs_{fileID}.fasta"
